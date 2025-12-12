@@ -4,10 +4,10 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE SEQUENCE IF NOT EXISTS lab6omis.hibernate_sequence
     START WITH 1
-                                 INCREMENT BY 1
-                                 NO MINVALUE
-                                 NO MAXVALUE
-                                 CACHE 1;
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 CREATE TABLE IF NOT EXISTS lab6omis.requests (
      id BIGINT PRIMARY KEY,
@@ -34,7 +34,7 @@ COMMENT ON COLUMN lab6omis.requests.language IS 'Язык запроса';
 COMMENT ON COLUMN lab6omis.requests.goal IS 'Цель запроса';
 COMMENT ON COLUMN lab6omis.requests.recognition_accuracy IS 'Точность распознавания (0-100%)';
 
-CREATE TABLE IF NOT EXISTS lab6omis.respons (
+CREATE TABLE IF NOT EXISTS lab6omis.response (
     id BIGINT PRIMARY KEY,
     created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modified_date TIMESTAMP,
@@ -47,12 +47,12 @@ CREATE TABLE IF NOT EXISTS lab6omis.respons (
       CHECK (LENGTH(message) >= 1 AND LENGTH(message) <= 1000)
 );
 
-CREATE INDEX IF NOT EXISTS idx_responses_language ON lab6omis.respons(language);
-CREATE INDEX IF NOT EXISTS idx_responses_created_date ON lab6omis.respons(created_date);
-CREATE INDEX IF NOT EXISTS idx_responses_message_length ON lab6omis.respons(LENGTH(message));
+CREATE INDEX IF NOT EXISTS idx_responses_language ON lab6omis.response(language);
+CREATE INDEX IF NOT EXISTS idx_responses_created_date ON lab6omis.response(created_date);
+CREATE INDEX IF NOT EXISTS idx_responses_message_length ON lab6omis.response(LENGTH(message));
 
-COMMENT ON TABLE lab6omis.respons IS 'Таблица ответов системы';
-COMMENT ON COLUMN lab6omis.respons.message IS 'Сообщение ответа';
+COMMENT ON TABLE lab6omis.response IS 'Таблица ответов системы';
+COMMENT ON COLUMN lab6omis.response.message IS 'Сообщение ответа';
 
 CREATE TABLE IF NOT EXISTS lab6omis.solutions (
       id BIGINT PRIMARY KEY,
@@ -171,7 +171,7 @@ CREATE TRIGGER trg_update_requests_modified_date
 EXECUTE FUNCTION lab6omis.update_modified_date();
 
 CREATE TRIGGER trg_update_responses_modified_date
-    BEFORE UPDATE ON lab6omis.respons
+    BEFORE UPDATE ON lab6omis.response
     FOR EACH ROW
 EXECUTE FUNCTION lab6omis.update_modified_date();
 
@@ -224,7 +224,7 @@ SELECT
     language,
     COUNT(*) as count,
     NULL as avg_accuracy
-FROM lab6omis.respons
+FROM lab6omis.response
 GROUP BY language
 UNION ALL
 SELECT
