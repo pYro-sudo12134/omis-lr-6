@@ -14,7 +14,7 @@ public class GeneralExceptionMapper implements ExceptionMapper<Exception> {
     public Response toResponse(Exception e) {
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                 .entity(Map.of(
-                        "error", "Ошибка запроса",
+                        "error", "Ошибка сервера",
                         "message", e.getMessage(),
                         "timestamp", new Date()
                 ))

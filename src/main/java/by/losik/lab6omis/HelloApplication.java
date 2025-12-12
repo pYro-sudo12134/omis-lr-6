@@ -5,6 +5,7 @@ import by.losik.lab6omis.exception.GeneralExceptionMapper;
 import by.losik.lab6omis.resource.CacheResource;
 import by.losik.lab6omis.resource.HelloResource;
 import by.losik.lab6omis.resource.general.types.AnalysisResource;
+import by.losik.lab6omis.resource.general.types.DialogResource;
 import by.losik.lab6omis.resource.general.types.RequestResource;
 import by.losik.lab6omis.resource.general.types.ResponseResource;
 import by.losik.lab6omis.resource.general.types.SensorDataResource;
@@ -28,6 +29,7 @@ public class HelloApplication extends Application {
         classes.add(RequestResource.class);
         classes.add(ResponseResource.class);
         classes.add(SensorDataResource.class);
+        classes.add(DialogResource.class);
         classes.add(SensorResource.class);
         classes.add(SolutionResource.class);
         classes.add(BadRequestExceptionMapper.class);

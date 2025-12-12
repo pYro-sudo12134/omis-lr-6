@@ -6,6 +6,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -21,8 +22,28 @@ public abstract class BaseRepository<T, ID> {
 
     @SuppressWarnings("unchecked")
     public BaseRepository() {
-        this.entityClass = (Class<T>) ((ParameterizedType) getClass()
-                .getGenericSuperclass()).getActualTypeArguments()[0];
+        Type genericSuperclass = getClass().getGenericSuperclass();
+        Class<?> currentClass = getClass();
+
+        while (!(genericSuperclass instanceof ParameterizedType) && currentClass != null) {
+            currentClass = currentClass.getSuperclass();
+            if (currentClass != null) {
+                genericSuperclass = currentClass.getGenericSuperclass();
+            }
+        }
+
+        if (!(genericSuperclass instanceof ParameterizedType)) {
+            throw new IllegalStateException("Cannot determine entity type for repository: " + getClass());
+        }
+
+        ParameterizedType parameterizedType = (ParameterizedType) genericSuperclass;
+        Type[] typeArgs = parameterizedType.getActualTypeArguments();
+
+        if (typeArgs.length == 0) {
+            throw new IllegalStateException("No type arguments found for repository: " + getClass());
+        }
+
+        this.entityClass = (Class<T>) typeArgs[0];
     }
 
     public T save(T entity) {

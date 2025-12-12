@@ -7,21 +7,87 @@
 
     <display-name>lab6omis</display-name>
 
+    <!-- Jersey для REST API -->
     <servlet>
         <servlet-name>Jersey REST Service</servlet-name>
         <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
-
         <init-param>
             <param-name>javax.ws.rs.Application</param-name>
             <param-value>by.losik.lab6omis.HelloApplication</param-value>
         </init-param>
-
         <load-on-startup>1</load-on-startup>
     </servlet>
 
+    <!-- ViewServlet для веб-интерфейса -->
+    <servlet>
+        <servlet-name>ViewController</servlet-name>
+        <servlet-class>by.losik.lab6omis.servlet.ViewServlet</servlet-class>
+    </servlet>
+
+    <!-- AuthServlet для авторизации -->
+    <servlet>
+        <servlet-name>AuthServlet</servlet-name>
+        <servlet-class>by.losik.lab6omis.servlet.AuthServlet</servlet-class>
+    </servlet>
+
+    <!-- Маппинги -->
     <servlet-mapping>
         <servlet-name>Jersey REST Service</servlet-name>
         <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
 
+    <servlet-mapping>
+        <servlet-name>ViewController</servlet-name>
+        <url-pattern>/login</url-pattern>
+        <url-pattern>/sensors</url-pattern>
+        <url-pattern>/sensors/*</url-pattern>
+        <url-pattern>/sounds</url-pattern>
+        <url-pattern>/sounds/*</url-pattern>
+        <url-pattern>/solutions</url-pattern>
+        <url-pattern>/solutions/*</url-pattern>
+        <url-pattern>/analysis</url-pattern>
+        <url-pattern>/analysis/*</url-pattern>
+        <url-pattern>/commands</url-pattern>
+        <url-pattern>/dialog</url-pattern>
+        <url-pattern>/dashboard</url-pattern>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>AuthServlet</servlet-name>
+        <url-pattern>/auth</url-pattern>
+        <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+
+    <!-- Фильтр -->
+    <filter>
+        <filter-name>AuthFilter</filter-name>
+        <filter-class>by.losik.lab6omis.filter.AuthFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AuthFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>EncodingFilter</filter-name>
+        <filter-class>by.losik.lab6omis.filter.EncodingFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>EncodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+
+    <welcome-file-list>
+        <welcome-file>login</welcome-file>
+    </welcome-file-list>
+
+    <error-page>
+        <error-code>403</error-code>
+        <location>/login</location>
+    </error-page>
 </web-app>
