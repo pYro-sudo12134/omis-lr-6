@@ -11,33 +11,33 @@
 - **Thymeleaf** - серверный рендеринг
 - **PostgreSQL 15** - основная СУБД
 - **Apache Tomcat 9** - контейнер сервлетов
+- **Catalina** - движок для сервлетов
 - **Maven** - сборка и управление зависимостями
 
-## Быстрый запуск
+## Запуск
 
-### 1. Предварительные требования
+### Предварительные требования
 - Java 11+ (OpenJDK или Oracle JDK)
 - PostgreSQL 15+
 - Apache Tomcat 9+
 - Maven 3.6+
 
-### 2. Настройка базы данных
+### Настройка базы данных
 ```bash
-# Создание БД (если не существует)
+# Создание БД (если не существует, но тогда и в persistence.xml тоже нужно поменять настройки подключения)
 createdb -U postgres omis6
 
 # Применение SQL скрипта
 psql -U postgres -d omis6 -f src/main/resources/omis6.sql
 ```
 
-### Сборка приложения
-```bash
-# Сборка WAR файла
+### Сборка WAR файла
+```
 mvn clean package -DskipTests
 ```
 
-### Развертывание на Tomcat
-```bash
+### Развертка на Tomcat
+```
 # Копирование WAR файла
 cp target/lab6omis.war /path/to/tomcat/webapps/
 
@@ -49,33 +49,32 @@ cp target/lab6omis.war /path/to/tomcat/webapps/
 /path/to/tomcat/bin/startup.bat
 ```
 
-### 5. Доступ к приложению
-Откройте в браузере: [http://localhost:8080/lab6omis](http://localhost:8080/lab6omis)
+### Проверка доступа
+```
+curl http://localhost:8080/lab6omis_war_exploded/
+```
+Можно настроить путь иначе, но это уже на ваш вкус, я стандартно сделал.
 
-## Структура проекта
+### Структура проекта
 ```
 src/main/java/by/losik/lab6omis/
-├── entities/           # JPA сущности
+├── entities/          # JPA сущности
 ├── dto/               # Data Transfer Objects
 ├── repository/        # Паттерн Repository
 ├── service/           # Бизнес-логика
 ├── resource/          # REST API (JAX-RS)
-├── controller/        # Thymeleaf контроллеры
 ├── persistence/       # Настройка JPA
-└── exception/         # Обработка исключений
+├── exception/         # Обработка исключений
+├── filter/            # Фильтры (Auth, Encoding)
+└── servlet/           # Сервлеты (ViewServlet, AuthServlet). Тут же и используется Thymeleaf
 ```
 
-## Конфигурация
+### Конфигурация
 Основные конфигурационные файлы:
-- `src/main/webapp/WEB-INF/persistence.xml` - настройки БД
-- `src/main/webapp/WEB-INF/web.xml` - дескриптор развертывания
-- `src/main/resources/ehcache.xml` - конфигурация кэширования
-- `src/main/webapp/WEB-INF/beans.xml` - активация CDI
 
-Для подключения к своей БД отредактируйте `persistence.xml`:
-```xml
-<property name="javax.persistence.jdbc.url" 
-          value="jdbc:postgresql://localhost:5432/omis6"/>
-<property name="javax.persistence.jdbc.user" value="your_username"/>
-<property name="javax.persistence.jdbc.password" value="your_password"/>
-```
+- src/main/webapp/WEB-INF/persistence.xml - настройки БД
+- src/main/webapp/WEB-INF/web.xml - дескриптор развертывания
+- src/main/resources/ehcache.xml - конфигурация кэширования
+- src/main/webapp/WEB-INF/beans.xml - активация CDI
+- src/main/webapp/WEB-INF/context.xml - настройки контекста Tomcat
+
