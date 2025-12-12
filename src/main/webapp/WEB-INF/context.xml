@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <!-- Включение CDI для Tomcat через Weld -->
+    <Resource name="BeanManager"
+              auth="Container"
+              type="javax.enterprise.inject.spi.BeanManager"
+              factory="org.jboss.weld.resources.ManagerObjectFactory"/>
+
+    <!-- Установка JPA persistence unit -->
+    <Resource name="persistence/lab6omisPU"
+              auth="Container"
+              type="javax.persistence.EntityManagerFactory"
+              factory="org.hibernate.jpa.HibernatePersistenceProvider"/>
+</Context>

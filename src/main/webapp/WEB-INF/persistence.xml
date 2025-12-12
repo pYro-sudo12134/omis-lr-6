@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd"
+             version="2.2">
+
+    <persistence-unit name="lab6omisPU" transaction-type="RESOURCE_LOCAL">
+
+        <!-- Явно указываем провайдер для Tomcat -->
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+        <!-- Классы сущностей -->
+        <class>by.losik.lab6omis.entities.base.BaseEntity</class>
+        <class>by.losik.lab6omis.entities.general.types.Request</class>
+        <class>by.losik.lab6omis.entities.general.types.ResponseEntity</class>
+        <class>by.losik.lab6omis.entities.general.types.Solution</class>
+        <class>by.losik.lab6omis.entities.general.types.Sound</class>
+        <class>by.losik.lab6omis.entities.general.types.Sensor</class>
+        <class>by.losik.lab6omis.entities.general.types.SensorData</class>
+
+        <properties>
+            <!-- PostgreSQL драйвер -->
+            <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/lab6omis"/>
+            <property name="javax.persistence.jdbc.user" value="postgres"/>
+            <property name="javax.persistence.jdbc.password" value="password"/>
+
+            <!-- Hibernate 5.6 настройки -->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL95Dialect"/>
+
+            <!-- Стратегия DDL -->
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+
+            <!-- Логирование SQL -->
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+            <property name="hibernate.use_sql_comments" value="true"/>
+
+            <!-- Включение кэширования второго уровня и кэша запросов -->
+            <property name="hibernate.cache.use_second_level_cache" value="true"/>
+            <property name="hibernate.cache.use_query_cache" value="true"/>
+
+            <!-- Фабрика регионов для EHCache-->
+            <property name="hibernate.cache.region.factory_class"
+                      value="org.hibernate.cache.ehcache.EhCacheRegionFactory"/>
+
+            <property name="net.sf.ehcache.configurationResourceName"
+                      value="/ehcache.xml"/>
+
+            <!-- Дополнительные настройки кэширования -->
+            <property name="hibernate.cache.use_structured_entries" value="true"/>
+            <property name="hibernate.generate_statistics" value="true"/>
+            <property name="hibernate.cache.region_prefix" value="hibernate"/>
+            <property name="hibernate.cache.default_cache_concurrency_strategy"
+                      value="read-write"/>
+
+            <!-- Автоматическое создание кэшей, если они не найдены в ehcache.xml -->
+            <property name="hibernate.cache.ehcache.missing_cache_strategy"
+                      value="create"/>
+
+            <!-- Схема по умолчанию -->
+            <property name="hibernate.default_schema" value="public"/>
+
+            <!-- Настройки пула соединений -->
+            <property name="hibernate.connection.pool_size" value="10"/>
+            <property name="hibernate.connection.autocommit" value="false"/>
+
+            <!-- Батчинг для оптимизации -->
+            <property name="hibernate.jdbc.batch_size" value="20"/>
+            <property name="hibernate.order_inserts" value="true"/>
+            <property name="hibernate.order_updates" value="true"/>
+            <property name="hibernate.batch_fetch_style" value="DYNAMIC"/>
+
+            <!-- Настройки производительности -->
+            <property name="hibernate.jdbc.fetch_size" value="50"/>
+            <property name="hibernate.jdbc.batch_versioned_data" value="true"/>
+            <property name="hibernate.max_fetch_depth" value="3"/>
+
+            <!-- Включение валидации -->
+            <property name="javax.persistence.validation.mode" value="auto"/>
+
+            <!-- Настройки для работы с датами -->
+            <property name="hibernate.jdbc.time_zone" value="UTC"/>
+
+            <!-- Фикс для Hibernate 5.6 и PostgreSQL -->
+            <property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
+
+            <!-- Оптимизация запросов -->
+            <property name="hibernate.query.plan_cache_max_size" value="2048"/>
+            <property name="hibernate.query.plan_parameter_metadata_max_size" value="128"/>
+
+            <!-- Дополнительные фиксы для Tomcat -->
+            <property name="hibernate.transaction.flush_before_completion" value="true"/>
+            <property name="hibernate.connection.handling_mode"
+                      value="DELAYED_ACQUISITION_AND_RELEASE_AFTER_TRANSACTION"/>
+
+            <!-- Для отладки кэширования -->
+            <property name="hibernate.session.events.log" value="false"/>
+
+        </properties>
+
+    </persistence-unit>
+</persistence>
