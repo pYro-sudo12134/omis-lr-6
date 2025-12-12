@@ -220,7 +220,7 @@ FROM lab6omis.requests
 GROUP BY language
 UNION ALL
 SELECT
-    'respons' as source,
+    'response' as source,
     language,
     COUNT(*) as count,
     NULL as avg_accuracy
@@ -244,3 +244,4 @@ SELECT
     s.is_active as sensor_active
 FROM lab6omis.sensor_data sd
          JOIN lab6omis.sensors s ON sd.sensor_id = s.id;
+
