@@ -25,6 +25,15 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+/**
+ * Основной сервлет для отображения и обработки всех страниц веб-приложения.
+ * Использует шаблонизатор Thymeleaf для рендеринга HTML-страниц.
+ * Обрабатывает запросы на CRUD-операции для сущностей Sensor, Sound и Solution,
+ * а также управляет анализом данных и диалоговой системой.
+ *
+ * @author Losik Yarolsav
+ * @version 1.0
+ */
 public class ViewServlet extends HttpServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(ViewServlet.class);
@@ -47,6 +56,10 @@ public class ViewServlet extends HttpServlet {
     @Inject
     private RequestService requestService;
 
+    /**
+     * Инициализирует сервлет, настраивая шаблонизатор Thymeleaf.
+     * Создает резолвер шаблонов с указанием папки, кодировки и других параметров.
+     */
     @Override
     public void init() {
         ServletContext servletContext = getServletContext();
@@ -67,6 +80,15 @@ public class ViewServlet extends HttpServlet {
         LOG.info("Thymeleaf инициализирован");
     }
 
+    /**
+     * Обрабатывает GET-запросы для отображения страниц.
+     * В зависимости от пути запроса вызывает соответствующий метод обработки.
+     * В случае ошибки формирует детализированную страницу с информацией об исключении.
+     *
+     * @param req  HttpServletRequest объект, содержащий данные запроса
+     * @param resp HttpServletResponse объект для отправки HTML-ответа
+     * @throws IOException если происходит ошибка ввода-вывода при записи ответа
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
@@ -120,6 +142,15 @@ public class ViewServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Обрабатывает DELETE-запросы для удаления сущностей.
+     * Удаляет Sensor, Sound или Solution в зависимости от пути запроса.
+     * Перенаправляет на соответствующий список после успешного удаления.
+     *
+     * @param req  HttpServletRequest объект, содержащий путь к удаляемому ресурсу
+     * @param resp HttpServletResponse объект для отправки ответа/перенаправления
+     * @throws IOException если происходит ошибка ввода-вывода при перенаправлении
+     */
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
@@ -164,12 +195,25 @@ public class ViewServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Обрабатывает отображение страницы входа в систему.
+     *
+     * @param req объект HttpServletRequest для получения параметров запроса
+     * @param ctx контекст Thymeleaf для передачи переменных в шаблон
+     * @return имя шаблона для страницы входа
+     */
     private String handleLogin(HttpServletRequest req, WebContext ctx) {
         String error = req.getParameter("error");
         ctx.setVariable("hasError", error != null);
         return "login";
     }
 
+    /**
+     * Обрабатывает отображение главной страницы / панели управления.
+     *
+     * @param ctx контекст Thymeleaf для передачи переменных в шаблон
+     * @return имя шаблона для главной страницы
+     */
     private String handleHome(WebContext ctx) {
         ctx.setVariable("title", "Панель управления");
         ctx.setVariable("totalSensors", sensorService.countAllSensors());
@@ -178,6 +222,14 @@ public class ViewServlet extends HttpServlet {
         return "dashboard";
     }
 
+    /**
+     * Обрабатывает отображение страниц, связанных с сенсорами.
+     * Включает список, создание, редактирование и просмотр сенсоров.
+     *
+     * @param req объект HttpServletRequest для определения конкретного действия
+     * @param ctx контекст Thymeleaf для передачи данных в шаблон
+     * @return имя соответствующего шаблона для сенсоров
+     */
     private String handleSensors(HttpServletRequest req, WebContext ctx) {
         String pathInfo = req.getPathInfo();
 
@@ -219,6 +271,14 @@ public class ViewServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Обрабатывает отображение страниц, связанных с решениями.
+     * Включает список, создание и просмотр решений.
+     *
+     * @param req объект HttpServletRequest для определения конкретного действия
+     * @param ctx контекст Thymeleaf для передачи данных в шаблон
+     * @return имя соответствующего шаблона для решений
+     */
     private String handleSolutions(HttpServletRequest req, WebContext ctx) {
         String pathInfo = req.getPathInfo();
 
@@ -251,6 +311,12 @@ public class ViewServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Обрабатывает отображение страницы анализа данных.
+     *
+     * @param ctx контекст Thymeleaf для передачи переменных в шаблон
+     * @return имя шаблона для страницы анализа
+     */
     private String handleAnalysis(WebContext ctx) {
         ctx.setVariable("title", "Панель анализа");
         ctx.setVariable("totalSolutions", solutionService.getTotalSolutionsCount());
@@ -258,16 +324,36 @@ public class ViewServlet extends HttpServlet {
         return "analysis/dashboard";
     }
 
+    /**
+     * Обрабатывает отображение страницы управления командами.
+     *
+     * @param ctx контекст Thymeleaf для передачи переменных в шаблон
+     * @return имя шаблона для страницы команд
+     */
     private String handleCommands(WebContext ctx) {
         ctx.setVariable("title", "Управление командами");
         return "commands/panel";
     }
 
+    /**
+     * Обрабатывает отображение страницы диалоговой системы.
+     *
+     * @param ctx контекст Thymeleaf для передачи переменных в шаблон
+     * @return имя шаблона для страницы диалога
+     */
     private String handleDialog(WebContext ctx) {
         ctx.setVariable("title", "Диалоговая система");
         return "dialog/panel";
     }
 
+    /**
+     * Обрабатывает отображение страниц, связанных со звуками.
+     * Включает список, создание, редактирование и просмотр звуков.
+     *
+     * @param req объект HttpServletRequest для определения конкретного действия
+     * @param ctx контекст Thymeleaf для передачи данных в шаблон
+     * @return имя соответствующего шаблона для звуков
+     */
     private String handleSounds(HttpServletRequest req, WebContext ctx) {
         String pathInfo = req.getPathInfo();
 
@@ -309,6 +395,14 @@ public class ViewServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Обрабатывает POST-запросы для создания и обновления сущностей,
+     * а также управления анализом и диалоговой системой.
+     *
+     * @param req  HttpServletRequest объект, содержащий данные формы
+     * @param resp HttpServletResponse объект для отправки ответа/перенаправления
+     * @throws IOException если происходит ошибка ввода-вывода при перенаправлении
+     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
@@ -331,6 +425,13 @@ public class ViewServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Обрабатывает POST-запросы для создания и обновления сенсоров.
+     *
+     * @param req  объект HttpServletRequest с данными формы сенсора
+     * @param resp объект HttpServletResponse для перенаправления
+     * @throws IOException если происходит ошибка ввода-вывода
+     */
     private void handleSensorPost(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
 
@@ -395,6 +496,13 @@ public class ViewServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Обрабатывает POST-запросы для создания и обновления звуков.
+     *
+     * @param req  объект HttpServletRequest с данными формы звука
+     * @param resp объект HttpServletResponse для перенаправления
+     * @throws IOException если происходит ошибка ввода-вывода
+     */
     private void handleSoundPost(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
 
@@ -462,6 +570,13 @@ public class ViewServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Обрабатывает POST-запросы для создания решений.
+     *
+     * @param req  объект HttpServletRequest с данными формы решения
+     * @param resp объект HttpServletResponse для перенаправления
+     * @throws IOException если происходит ошибка ввода-вывода
+     */
     private void handleSolutionPost(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
 
@@ -490,6 +605,13 @@ public class ViewServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Обрабатывает запуск анализа данных.
+     *
+     * @param req  объект HttpServletRequest
+     * @param resp объект HttpServletResponse для перенаправления
+     * @throws IOException если происходит ошибка ввода-вывода
+     */
     private void handleStartAnalysis(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
         try {
@@ -502,6 +624,13 @@ public class ViewServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Обрабатывает отмену анализа данных.
+     *
+     * @param req  объект HttpServletRequest
+     * @param resp объект HttpServletResponse для перенаправления
+     * @throws IOException если происходит ошибка ввода-вывода
+     */
     private void handleCancelAnalysis(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
         try {
@@ -514,6 +643,13 @@ public class ViewServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Обрабатывает отправку сообщения в диалоговой системе.
+     *
+     * @param req  объект HttpServletRequest с текстом сообщения
+     * @param resp объект HttpServletResponse для перенаправления
+     * @throws IOException если происходит ошибка ввода-вывода
+     */
     private void handleSendDialog(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
         try {
