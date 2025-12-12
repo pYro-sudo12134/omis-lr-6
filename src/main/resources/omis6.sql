@@ -244,4 +244,3 @@ SELECT
     s.is_active as sensor_active
 FROM lab6omis.sensor_data sd
          JOIN lab6omis.sensors s ON sd.sensor_id = s.id;
-

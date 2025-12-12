@@ -26,6 +26,8 @@ import java.util.List;
  * @param <T> тип сущности
  * @param <ID> тип идентификатора (Long, String, etc.)
  * @param <S> тип сервиса
+ * @author Losik Yaroslav
+ * @version 1.0
  */
 public abstract class BaseResource<T, ID, S extends BaseService<T, ID>> {
 

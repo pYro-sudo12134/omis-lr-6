@@ -19,6 +19,9 @@ import java.util.Optional;
  * REST ресурс для работы с решениями (Solution).
  * Использует базовый ресурс для основных CRUD операций,
  * а также предоставляет расширенные эндпоинты для работы с командами и бизнес-логикой.
+ *
+ * @author Losik Yaroslav
+ * @version 1.0
  */
 @Path("/solutions")
 @Produces(MediaType.APPLICATION_JSON)

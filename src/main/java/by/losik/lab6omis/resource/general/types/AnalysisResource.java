@@ -41,6 +41,9 @@ import java.util.stream.Collectors;
  * REST ресурс для анализа данных.
  * Использует все компоненты: сервисы, стратегии анализа, команды.
  * Позволяет выполнять комплексный анализ запросов и решений.
+ *
+ * @author Losik Yaroslav
+ * @version 1.0
  */
 @Path("/analysis")
 @Produces(MediaType.APPLICATION_JSON)
