@@ -72,9 +72,9 @@ src/main/java/by/losik/lab6omis/
 ### Конфигурация
 Основные конфигурационные файлы:
 
-- src/main/webapp/WEB-INF/persistence.xml - настройки БД
-- src/main/webapp/WEB-INF/web.xml - дескриптор развертывания
-- src/main/resources/ehcache.xml - конфигурация кэширования
-- src/main/webapp/WEB-INF/beans.xml - активация CDI
-- src/main/webapp/WEB-INF/context.xml - настройки контекста Tomcat
+- persistence.xml - настройки БД
+- web.xml - дескриптор развертывания
+- ehcache.xml - конфигурация кэширования
+- beans.xml - активация CDI
+- context.xml - настройки контекста Tomcat
 
