@@ -2,6 +2,7 @@ package by.losik.lab6omis;
 
 import by.losik.lab6omis.exception.BadRequestExceptionMapper;
 import by.losik.lab6omis.exception.GeneralExceptionMapper;
+import by.losik.lab6omis.exception.NotFoundExceptionMapper;
 import by.losik.lab6omis.resource.CacheResource;
 import by.losik.lab6omis.resource.HelloResource;
 import by.losik.lab6omis.resource.general.types.AnalysisResource;
@@ -33,6 +34,7 @@ public class HelloApplication extends Application {
         classes.add(SensorResource.class);
         classes.add(SolutionResource.class);
         classes.add(BadRequestExceptionMapper.class);
+        classes.add(NotFoundExceptionMapper.class);
         classes.add(GeneralExceptionMapper.class);
         return classes;
     }

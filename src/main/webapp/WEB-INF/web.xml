@@ -7,6 +7,18 @@
 
     <display-name>lab6omis</display-name>
 
+    <!-- Фильтры -->
+    <filter>
+        <filter-name>EncodingFilter</filter-name>
+        <filter-class>by.losik.lab6omis.filter.EncodingFilter</filter-class>
+    </filter>
+
+    <!-- Маппинг фильтров -->
+    <filter-mapping>
+        <filter-name>EncodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
     <!-- Jersey для REST API -->
     <servlet>
         <servlet-name>Jersey REST Service</servlet-name>
@@ -30,7 +42,7 @@
         <servlet-class>by.losik.lab6omis.servlet.AuthServlet</servlet-class>
     </servlet>
 
-    <!-- Маппинги -->
+    <!-- Маппинги сервлетов -->
     <servlet-mapping>
         <servlet-name>Jersey REST Service</servlet-name>
         <url-pattern>/api/*</url-pattern>
@@ -58,25 +70,6 @@
         <url-pattern>/auth</url-pattern>
         <url-pattern>/logout</url-pattern>
     </servlet-mapping>
-
-    <!-- Фильтр -->
-    <filter>
-        <filter-name>AuthFilter</filter-name>
-        <filter-class>by.losik.lab6omis.filter.AuthFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>AuthFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
-    <filter>
-        <filter-name>EncodingFilter</filter-name>
-        <filter-class>by.losik.lab6omis.filter.EncodingFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>EncodingFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
 
     <session-config>
         <session-timeout>30</session-timeout>

@@ -56,11 +56,15 @@ public class AuthServlet extends HttpServlet {
             session.setAttribute("authenticated", true);
             session.setAttribute("username", username);
 
-            String redirectPath = req.getContextPath() + "/dashboard";
-            resp.sendRedirect(redirectPath);
+            String redirectUrl = (String) session.getAttribute("redirectUrl");
+            if (redirectUrl != null && !redirectUrl.isEmpty()) {
+                session.removeAttribute("redirectUrl");
+                resp.sendRedirect(req.getContextPath() + redirectUrl);
+            } else {
+                resp.sendRedirect(req.getContextPath() + "/dashboard");
+            }
         } else {
-            String redirectPath = req.getContextPath() + "/login?error=true";
-            resp.sendRedirect(redirectPath);
+            resp.sendRedirect(req.getContextPath() + "/login?error=true");
         }
     }
 
