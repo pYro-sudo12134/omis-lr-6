@@ -53,7 +53,7 @@
         </div>
     </div>
 
-    <form action="send" method="post">
+    <form th:action="@{api/dialog/send}" method="post">
         <div class="input-group">
             <input type="text" class="form-control" name="message"
                    placeholder="Введите ваше сообщение..." required>
@@ -63,10 +63,8 @@
 </div>
 
 <script>
-    // Простая логика для отображения сообщений
     document.addEventListener('DOMContentLoaded', function() {
         const messageBox = document.getElementById('messageBox');
-
         messageBox.scrollTop = messageBox.scrollHeight;
     });
 </script>

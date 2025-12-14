@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title th:text="${sound?.id ? 'Редактировать звук' : 'Новый звук'}"></title>
+  <title th:if="${sound != null and sound.id != null}">Редактировать звук</title>
+  <title th:unless="${sound != null and sound.id != null}">Новый звук</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
@@ -11,13 +12,15 @@
   <div class="container">
     <a class="navbar-brand" th:href="@{/sounds}">↩ Назад к списку</a>
     <span class="navbar-text text-white">
-      <span th:text="${sound?.id ? 'Редактирование звука' : 'Создание звука'}"></span>
+      <span th:if="${sound != null and sound.id != null}">Редактирование звука</span>
+      <span th:unless="${sound != null and sound.id != null}">Создание звука</span>
     </span>
   </div>
 </nav>
 
 <div class="container">
-  <h1 class="mb-4" th:text="${sound?.id ? 'Редактировать звук' : 'Новый звук'}"></h1>
+  <h1 class="mb-4" th:if="${sound != null and sound.id != null}">Редактировать звук</h1>
+  <h1 class="mb-4" th:unless="${sound != null and sound.id != null}">Новый звук</h1>
 
   <div th:if="${param.error}" class="alert alert-danger">
     <span th:text="${param.error}"></span>
@@ -29,14 +32,17 @@
 
   <div class="card">
     <div class="card-body">
-      <form th:action="${sound?.id ? '/sounds/edit/' + sound.id : '/sounds/new'}"
-            th:object="${sound}" method="post">
-        <input type="hidden" th:field="*{id}" th:if="${sound?.id}">
+      <form th:action="@{/sounds}" method="post">
+        <input type="hidden" name="operation"
+               th:value="${(sound != null and sound.id != null) ? 'edit' : 'new'}">
+        <input type="hidden" name="id"
+               th:value="${sound.id}"
+               th:if="${sound != null and sound.id != null}">
 
         <div class="mb-3">
           <label for="noise" class="form-label">Тип шума *</label>
           <input type="text" class="form-control" id="noise"
-                 th:field="*{noise}"
+                 name="noise" th:value="${sound != null ? sound.noise : ''}"
                  minlength="2" maxlength="100" required>
           <div class="form-text">От 2 до 100 символов</div>
         </div>
@@ -44,14 +50,15 @@
         <div class="mb-3">
           <label for="frequency" class="form-label">Частота (Гц) *</label>
           <input type="number" class="form-control" id="frequency"
-                 th:field="*{frequency}"
+                 name="frequency" th:value="${sound != null ? sound.frequency : ''}"
                  min="1" max="200000" step="1" required>
           <div class="form-text">От 1 до 200000 Гц (целое число)</div>
         </div>
 
         <div class="d-flex gap-2">
           <button type="submit" class="btn btn-primary">
-            <span th:text="${sound?.id ? 'Сохранить' : 'Создать'}"></span>
+            <span th:if="${sound != null and sound.id != null}">Сохранить</span>
+            <span th:unless="${sound != null and sound.id != null}">Создать</span>
           </button>
           <a th:href="@{/sounds}" class="btn btn-secondary">Отмена</a>
         </div>

@@ -60,7 +60,9 @@
         <url-pattern>/analysis</url-pattern>
         <url-pattern>/analysis/*</url-pattern>
         <url-pattern>/commands</url-pattern>
+        <url-pattern>/commands/*</url-pattern>
         <url-pattern>/dialog</url-pattern>
+        <url-pattern>/dialog/*</url-pattern>
         <url-pattern>/dashboard</url-pattern>
         <url-pattern>/</url-pattern>
     </servlet-mapping>

@@ -33,7 +33,8 @@
                 <div class="card-body">
                     <h5 class="card-title">Запуск анализа</h5>
                     <p class="card-text">Запустите процесс анализа данных системы.</p>
-                    <form action="start" method="post">
+                    <!-- ИСПРАВЛЕНО: используем правильный путь -->
+                    <form th:action="@{/analysis/start}" method="post">
                         <button type="submit" class="btn btn-success">Запустить анализ</button>
                     </form>
                 </div>
@@ -45,7 +46,8 @@
                 <div class="card-body">
                     <h5 class="card-title">Отмена анализа</h5>
                     <p class="card-text">Отмените текущий процесс анализа.</p>
-                    <form action="cancel" method="post">
+                    <!-- ИСПРАВЛЕНО: используем правильный путь -->
+                    <form th:action="@{/analysis/cancel}" method="post">
                         <button type="submit" class="btn btn-danger">Отменить анализ</button>
                     </form>
                 </div>

@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
  * @author Losik Yaroslav
  * @version 1.0
  */
-@Path("/analysis")
+@Path("api/analysis")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class AnalysisResource extends BaseResource<Request, Long, RequestService> {

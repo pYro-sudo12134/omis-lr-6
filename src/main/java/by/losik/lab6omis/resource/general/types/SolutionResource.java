@@ -23,7 +23,7 @@ import java.util.Optional;
  * @author Losik Yaroslav
  * @version 1.0
  */
-@Path("/solutions")
+@Path("api/solutions")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class SolutionResource extends BaseResource<Solution, Long, SolutionService> {

@@ -24,6 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 /**
  * Основной сервлет для отображения и обработки всех страниц веб-приложения.
@@ -255,9 +257,9 @@ public class ViewServlet extends HttpServlet {
             } catch (Exception e) {
                 return "error";
             }
-        } else if (pathInfo.startsWith("/new")) {
+        } else if (pathInfo.equals("/new")) {
             ctx.setVariable("sensor", new Sensor());
-            return "sensors/edit";
+            return "sensors/edit"; // Используем тот же шаблон edit.html
         } else if (pathInfo.startsWith("/view/")) {
             try {
                 Long id = Long.parseLong(pathInfo.substring(6));
@@ -379,9 +381,9 @@ public class ViewServlet extends HttpServlet {
             } catch (Exception e) {
                 return "error";
             }
-        } else if (pathInfo.startsWith("/new")) {
+        } else if (pathInfo.equals("/new")) {
             ctx.setVariable("sound", new Sound());
-            return "sounds/edit";
+            return "sounds/edit";  // Используем тот же шаблон edit.html
         } else if (pathInfo.startsWith("/view/")) {
             try {
                 Long id = Long.parseLong(pathInfo.substring(6));
@@ -408,21 +410,46 @@ public class ViewServlet extends HttpServlet {
             throws IOException {
 
         String path = req.getServletPath();
-        LOG.debug("Обработка POST запроса: {}", path);
+        String pathInfo = req.getPathInfo();
+        LOG.info("=== НАЧАЛО ОБРАБОТКИ POST ===");
+        LOG.info("ServletPath: {}", path);
+        LOG.info("PathInfo: {}", pathInfo);
+        LOG.info("Полный URL: {} {}", req.getMethod(), req.getRequestURI());
+        LOG.info("Контекст: {}", req.getContextPath());
 
-        if (path.startsWith("/sensors")) {
-            handleSensorPost(req, resp);
-        } else if (path.startsWith("/sounds")) {
-            handleSoundPost(req, resp);
-        } else if (path.startsWith("/solutions")) {
-            handleSolutionPost(req, resp);
-        } else if (path.equals("/analysis/start")) {
-            handleStartAnalysis(req, resp);
-        } else if (path.equals("/analysis/cancel")) {
-            handleCancelAnalysis(req, resp);
-        } else if (path.equals("/dialog/send")) {
-            handleSendDialog(req, resp);
+        req.getParameterMap().forEach((key, values) -> LOG.info("Параметр '{}' = '{}'", key, Arrays.toString(values)));
+
+        java.util.Collections.list(req.getHeaderNames()).forEach(headerName -> LOG.info("Заголовок '{}': '{}'", headerName, req.getHeader(headerName)));
+
+        try {
+            if (path.startsWith("/sensors")) {
+                LOG.info("Перенаправляем в handleSensorPost");
+                handleSensorPost(req, resp);
+            } else if (path.startsWith("/sounds")) {
+                LOG.info("Перенаправляем в handleSoundPost");
+                handleSoundPost(req, resp);
+            } else if (path.startsWith("/solutions")) {
+                LOG.info("Перенаправляем в handleSolutionPost");
+                handleSolutionPost(req, resp);
+            } else if (path.equals("/analysis/start")) {
+                LOG.info("Перенаправляем в handleStartAnalysis");
+                handleStartAnalysis(req, resp);
+            } else if (path.equals("/analysis/cancel")) {
+                LOG.info("Перенаправляем в handleCancelAnalysis");
+                handleCancelAnalysis(req, resp);
+            } else if (path.equals("/dialog/send")) {
+                LOG.info("Перенаправляем в handleSendDialog");
+                handleSendDialog(req, resp);
+            } else {
+                LOG.error("Неизвестный POST путь: {}", path);
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Неизвестный путь: " + path);
+            }
+        } catch (Exception e) {
+            LOG.error("КРИТИЧЕСКАЯ ОШИБКА в doPost", e);
+            throw e;
         }
+
+        LOG.info("=== КОНЕЦ ОБРАБОТКИ POST ===");
     }
 
     /**
@@ -436,7 +463,7 @@ public class ViewServlet extends HttpServlet {
             throws IOException {
 
         try {
-            String pathInfo = req.getPathInfo();
+            String operation = req.getParameter("operation"); // Получаем из формы
             String contextPath = req.getContextPath();
 
             String name = req.getParameter("name");
@@ -444,46 +471,35 @@ public class ViewServlet extends HttpServlet {
             String location = req.getParameter("location");
             boolean isActive = "on".equals(req.getParameter("active"));
 
-            if (name == null || name.trim().isEmpty() || type == null || type.trim().isEmpty()) {
-                resp.sendRedirect(contextPath + "/sensors?error=Не заполнены обязательные поля");
-                return;
-            }
-
-            if (pathInfo == null || pathInfo.equals("/") || pathInfo.equals("/new")) {
+            if ("new".equals(operation)) {
                 Sensor sensor = new Sensor();
                 sensor.setName(name.trim());
                 sensor.setType(type.trim());
                 sensor.setLocation(location != null ? location.trim() : null);
                 sensor.setIsActive(isActive);
 
-                Sensor createdSensor = sensorService.createSensor(sensor);
-                LOG.info("Создан сенсор с ID: {}", createdSensor.getId());
+                sensorService.createSensor(sensor);
                 resp.sendRedirect(contextPath + "/sensors?success=Сенсор успешно создан");
 
-            } else if (pathInfo.startsWith("/edit/")) {
-                String[] parts = pathInfo.split("/");
-                if (parts.length > 2) {
-                    Long id = Long.parseLong(parts[2]);
-                    Sensor existingSensor = sensorService.getById(id);
+            } else if ("edit".equals(operation)) {
+                Long id = Long.parseLong(req.getParameter("id"));
+                Sensor existingSensor = sensorService.getById(id);
 
-                    if (existingSensor == null) {
-                        resp.sendRedirect(contextPath + "/sensors?error=Сенсор не найден");
-                        return;
-                    }
-
-                    existingSensor.setName(name.trim());
-                    existingSensor.setType(type.trim());
-                    existingSensor.setLocation(location != null ? location.trim() : null);
-                    existingSensor.setIsActive(isActive);
-
-                    Sensor updatedSensor = sensorService.updateSensor(id, existingSensor);
-                    LOG.info("Обновлен сенсор с ID: {}", updatedSensor.getId());
-                    resp.sendRedirect(contextPath + "/sensors?success=Сенсор успешно обновлен");
-                } else {
-                    resp.sendRedirect(contextPath + "/sensors?error=Некорректный ID сенсора");
+                if (existingSensor == null) {
+                    resp.sendRedirect(contextPath + "/sensors?error=Сенсор не найден");
+                    return;
                 }
+
+                existingSensor.setName(name.trim());
+                existingSensor.setType(type.trim());
+                existingSensor.setLocation(location != null ? location.trim() : null);
+                existingSensor.setIsActive(isActive);
+
+                sensorService.updateSensor(id, existingSensor);
+                resp.sendRedirect(contextPath + "/sensors?success=Сенсор успешно обновлен");
             } else {
-                resp.sendRedirect(contextPath + "/sensors?error=Некорректный путь");
+                LOG.error("Неизвестная операция: {}", operation);
+                resp.sendRedirect(contextPath + "/sensors?error=Неизвестная операция");
             }
 
         } catch (NumberFormatException e) {
@@ -507,7 +523,7 @@ public class ViewServlet extends HttpServlet {
             throws IOException {
 
         try {
-            String pathInfo = req.getPathInfo();
+            String operation = req.getParameter("operation");
             String contextPath = req.getContextPath();
 
             String noise = req.getParameter("noise");
@@ -522,7 +538,7 @@ public class ViewServlet extends HttpServlet {
             try {
                 int frequency = Integer.parseInt(frequencyStr.trim());
 
-                if (pathInfo == null || pathInfo.equals("/") || pathInfo.equals("/new")) {
+                if ("new".equals(operation)) {
                     Sound sound = new Sound();
                     sound.setNoise(noise.trim());
                     sound.setFrequency(frequency);
@@ -531,28 +547,24 @@ public class ViewServlet extends HttpServlet {
                     LOG.info("Создан звук с ID: {}", createdSound.getId());
                     resp.sendRedirect(contextPath + "/sounds?success=Звук успешно создан");
 
-                } else if (pathInfo.startsWith("/edit/")) {
-                    String[] parts = pathInfo.split("/");
-                    if (parts.length > 2) {
-                        Long id = Long.parseLong(parts[2]);
-                        Sound existingSound = soundService.getById(id);
+                } else if ("edit".equals(operation)) {
+                    Long id = Long.parseLong(req.getParameter("id"));
+                    Sound existingSound = soundService.getById(id);
 
-                        if (existingSound == null) {
-                            resp.sendRedirect(contextPath + "/sounds?error=Звук не найден");
-                            return;
-                        }
-
-                        existingSound.setNoise(noise.trim());
-                        existingSound.setFrequency(frequency);
-
-                        Sound updatedSound = soundService.updateSound(id, existingSound);
-                        LOG.info("Обновлен звук с ID: {}", updatedSound.getId());
-                        resp.sendRedirect(contextPath + "/sounds?success=Звук успешно обновлен");
-                    } else {
-                        resp.sendRedirect(contextPath + "/sounds?error=Некорректный ID звука");
+                    if (existingSound == null) {
+                        resp.sendRedirect(contextPath + "/sounds?error=Звук не найден");
+                        return;
                     }
+
+                    existingSound.setNoise(noise.trim());
+                    existingSound.setFrequency(frequency);
+
+                    Sound updatedSound = soundService.updateSound(id, existingSound);
+                    LOG.info("Обновлен звук с ID: {}", updatedSound.getId());
+                    resp.sendRedirect(contextPath + "/sounds?success=Звук успешно обновлен");
                 } else {
-                    resp.sendRedirect(contextPath + "/sounds?error=Некорректный путь");
+                    LOG.error("Неизвестная операция: {}", operation);
+                    resp.sendRedirect(contextPath + "/sounds?error=Неизвестная операция");
                 }
 
             } catch (NumberFormatException e) {
@@ -614,13 +626,18 @@ public class ViewServlet extends HttpServlet {
      */
     private void handleStartAnalysis(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
+        LOG.info("=== Обработка запуска анализа ===");
+        LOG.info("Контекст: {}", req.getContextPath());
+        LOG.info("Путь: {}", req.getServletPath());
+        LOG.info("PathInfo: {}", req.getPathInfo());
+
         try {
             analysisCommand.call();
             resp.sendRedirect(req.getContextPath() + "/analysis?status=Анализ запущен");
         } catch (Exception e) {
             LOG.error("Ошибка запуска анализа", e);
             resp.sendRedirect(req.getContextPath() + "/analysis?error=" +
-                    e.getMessage().replace(" ", "%20"));
+                    java.net.URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8));
         }
     }
 
@@ -633,13 +650,14 @@ public class ViewServlet extends HttpServlet {
      */
     private void handleCancelAnalysis(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
+        LOG.info("=== Обработка отмены анализа ===");
         try {
             analysisCommand.cancel();
             resp.sendRedirect(req.getContextPath() + "/analysis?status=Анализ отменен");
         } catch (Exception e) {
             LOG.error("Ошибка отмены анализа", e);
             resp.sendRedirect(req.getContextPath() + "/analysis?error=" +
-                    e.getMessage().replace(" ", "%20"));
+                    java.net.URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8));
         }
     }
 
@@ -652,21 +670,30 @@ public class ViewServlet extends HttpServlet {
      */
     private void handleSendDialog(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
+        LOG.info("=== НАЧАЛО handleSendDialog ===");
         try {
             String message = req.getParameter("message");
+            LOG.info("Получено сообщение: '{}'", message);
+
             if (message == null || message.trim().isEmpty()) {
+                LOG.warn("Пустое сообщение, перенаправляем с ошибкой");
                 resp.sendRedirect(req.getContextPath() + "/dialog?error=Сообщение не может быть пустым");
                 return;
             }
 
-            // Здесь можно добавить логику обработки диалога
             String response = "Обработано: " + message.trim();
-            resp.sendRedirect(req.getContextPath() + "/dialog?response=" +
-                    response.replace(" ", "%20"));
+            String encodedResponse = java.net.URLEncoder.encode(response, StandardCharsets.UTF_8);
+            LOG.info("Закодированный ответ: {}", encodedResponse);
+
+            String redirectUrl = req.getContextPath() + "/dialog?response=" + encodedResponse;
+            LOG.info("Перенаправляем на: {}", redirectUrl);
+
+            resp.sendRedirect(redirectUrl);
         } catch (Exception e) {
-            LOG.error("Ошибка отправки сообщения", e);
+            LOG.error("Ошибка в handleSendDialog", e);
             resp.sendRedirect(req.getContextPath() + "/dialog?error=" +
-                    e.getMessage().replace(" ", "%20"));
+                    java.net.URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8));
         }
+        LOG.info("=== КОНЕЦ handleSendDialog ===");
     }
 }

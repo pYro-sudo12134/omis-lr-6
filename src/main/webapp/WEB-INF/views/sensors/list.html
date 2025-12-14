@@ -19,7 +19,7 @@
 <div class="container">
   <div class="d-flex justify-content-between mb-4">
     <h1>Сенсоры</h1>
-    <a href="new" class="btn btn-success">+ Добавить сенсор</a>
+    <a th:href="@{/sensors/new}" class="btn btn-success">+ Добавить звук</a>
   </div>
 
   <table class="table table-striped">
@@ -44,8 +44,8 @@
         <span th:unless="${sensor.isActive}" class="badge bg-danger">Нет</span>
       </td>
       <td>
-        <a th:href="@{'edit/' + ${sensor.id}}" class="btn btn-sm btn-primary">Редактировать</a>
-        <a th:href="@{'view/' + ${sensor.id}}" class="btn btn-sm btn-info">Просмотр</a>
+        <a th:href="@{/sensors/edit/{id}(id=${sensor.id})}" class="btn btn-sm btn-primary">Редактировать</a>
+        <a th:href="@{/sensors/view/{id}(id=${sensor.id})}" class="btn btn-sm btn-info">Просмотр</a>
       </td>
     </tr>
     </tbody>
